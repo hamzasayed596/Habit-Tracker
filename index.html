@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Daily Habit Tracker</title>
+    <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+<div class="container">
+    <header>
+        <h1>Habit Tracker</h1>
+        <p>Track your habits and visualize your progress</p>
+    </header>
+    <div class="tabs">
+        <div class="tab active" data-tab="habits">Habits</div>
+        <div class="tab" data-tab="progress">Progress</div>
+        <div class="tab" data-tab="analysis">Analysis</div>
+    </div>
+    <div class="tab-content active" id="habits-tab">
+        <div class="grid">
+            <div class="sidebar">
+                <div class="card">
+                    <h2>Add New Habit</h2>
+                    <form id="habit-form">
+                        <label for="habit-name">Habit Name</label>
+                        <input type="text" id="habit-name" placeholder="Habit name" required>
+                        <label for="habit-category">Category</label>
+                        <select id="habit-category">
+                            <option value="health">Health & Fitness</option>
+                            <option value="productivity">Productivity</option>
+                            <option value="learning">Learning</option>
+                            <option value="personal">Personal Development</option>
+                            <option value="other">Other</option>
+                        </select>
+                        <label for="habit-frequency">Frequency</label>
+                        <select id="habit-frequency">
+                            <option value="daily">Daily</option>
+                            <option value="weekly">Weekly</option>
+                            <option value="monthly">Monthly</option>
+                        </select>
+                        <button type="submit" class="btn btn-primary">Add Habit</button>
+                    </form>
+                </div>
+                <div class="card">
+                    <h2>Your Habits</h2>
+                    <div class="habits-list" id="habits-list"></div>
+                </div>
+            </div>
+            <div class="main-content">
+                <div class="card">
+                    <h2>Today's Habits</h2>
+                    <p id="today-date"></p>
+                    <div id="today-habits"></div>
+                </div>
+                <div class="card">
+                    <h2>Monthly View</h2>
+                    <div class="calendar-container">
+                        <div class="calendar-header">
+                            <button id="prev-month" class="btn btn-primary">◀</button>
+                            <h3 id="calendar-month">August 2025</h3>
+                            <button id="next-month" class="btn btn-primary">▶</button>
+                        </div>
+                        <div class="calendar-weekdays">
+                            <div>Sun</div>
+                            <div>Mon</div>
+                            <div>Tue</div>
+                            <div>Wed</div>
+                            <div>Thu</div>
+                            <div>Fri</div>
+                            <div>Sat</div>
+                        </div>
+                        <div class="calendar" id="calendar"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="tab-content" id="progress-tab">
+        <div class="card">
+            <h2>Progress</h2>
+            <div class="charts">
+                <div class="chart-container">
+                    <canvas id="completion-chart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <canvas id="streak-chart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="tab-content" id="analysis-tab">
+        <div class="card">
+            <h2>Habit Analysis</h2>
+            <div class="stats">
+                <div class="stat-card">
+                    <h3>Streak</h3>
+                    <div class="stat-value" id="current-streak">0 days</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Completion Rate</h3>
+                    <div class="stat-value" id="completion-rate">0%</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Total Habits</h3>
+                    <div class="stat-value" id="total-habits">0</div>
+                </div>
+            </div>
+            <div class="charts">
+                <div class="chart-container">
+                    <canvas id="category-chart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <canvas id="trend-chart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="chart.min.js"></script>
+<script src="script.js"></script>
+</body>
+</html>

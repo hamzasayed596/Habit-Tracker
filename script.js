@@ -5,8 +5,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const todayHabits = document.getElementById('today-habits');
     const calendar = document.getElementById('calendar');
     const todayDateEl = document.getElementById('today-date');
-    const today = new Date();
+    let today = new Date();
+    let currentMonth = new Date();
+
     initApp();
+
     function initApp() {
         todayDateEl.textContent = today.toLocaleDateString('en-US', {
             weekday: 'long',
@@ -16,10 +19,21 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         setupEventListeners();
         renderHabits();
+        updateCalendarHeader();
     }
+
+    function updateCalendarHeader() {
+        const calendarMonthEl = document.getElementById('calendar-month');
+        calendarMonthEl.textContent = currentMonth.toLocaleDateString('en-US', {
+            month: 'long',
+            year: 'numeric'
+        });
+    }
+
     function setupEventListeners() {
         const tabs = document.querySelectorAll('.tab');
         const tabContents = document.querySelectorAll('.tab-content');
+
         tabs.forEach(tab => {
             tab.addEventListener('click', () => {
                 const tabId = tab.getAttribute('data-tab');
@@ -27,11 +41,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 tabContents.forEach(tc => tc.classList.remove('active'));
                 tab.classList.add('active');
                 document.getElementById(`${tabId}-tab`).classList.add('active');
-                if (tabId === 'progress' || tabId === 'analytics') {
+                if (tabId === 'progress' || tabId === 'analysis') {
                     updateCharts();
                 }
             });
         });
+
         habitForm.addEventListener('submit', function(e) {
             e.preventDefault();
             const name = document.getElementById('habit-name').value;
@@ -50,21 +65,40 @@ document.addEventListener('DOMContentLoaded', function() {
             renderHabits();
             habitForm.reset();
         });
+
+        const prevMonthBtn = document.getElementById('prev-month');
+        const nextMonthBtn = document.getElementById('next-month');
+
+        prevMonthBtn.addEventListener('click', function() {
+            currentMonth.setMonth(currentMonth.getMonth() - 1);
+            updateCalendarHeader();
+            renderCalendar();
+        });
+
+        nextMonthBtn.addEventListener('click', function() {
+            currentMonth.setMonth(currentMonth.getMonth() + 1);
+            updateCalendarHeader();
+            renderCalendar();
+        });
     }
+
     function saveHabits() {
         localStorage.setItem('habits', JSON.stringify(habits));
     }
+
     function renderHabits() {
         renderHabitsList();
         renderTodayHabits();
         renderCalendar();
     }
+
     function renderHabitsList() {
         habitsList.innerHTML = '';
         if (habits.length === 0) {
             habitsList.innerHTML = '<p class="no-habits">No habits yet. Add your first habit to get started!</p>';
             return;
         }
+
         habits.forEach(habit => {
             const habitEl = document.createElement('div');
             habitEl.className = 'habit-item';
@@ -80,13 +114,16 @@ document.addEventListener('DOMContentLoaded', function() {
             habitsList.appendChild(habitEl);
         });
     }
+
     function renderTodayHabits() {
         todayHabits.innerHTML = '';
         const todayStr = formatDate(today);
+
         if (habits.length === 0) {
             todayHabits.innerHTML = '<p class="no-habits">No habits to show today. Add habits to start tracking!</p>';
             return;
         }
+
         habits.forEach(habit => {
             const isCompleted = habit.completedDates.includes(todayStr);
             const habitEl = document.createElement('div');
@@ -106,21 +143,24 @@ document.addEventListener('DOMContentLoaded', function() {
             todayHabits.appendChild(habitEl);
         });
     }
+
     function renderCalendar() {
         calendar.innerHTML = '';
-        const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
-        const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+        const firstDay = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1);
+        const lastDay = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0);
         const daysInMonth = lastDay.getDate();
+
         for (let i = 0; i < firstDay.getDay(); i++) {
             const emptyDay = document.createElement('div');
             emptyDay.className = 'calendar-day empty';
             calendar.appendChild(emptyDay);
         }
+
         for (let i = 1; i <= daysInMonth; i++) {
             const day = document.createElement('div');
             day.className = 'calendar-day';
             day.textContent = i.toString();
-            const dateStr = formatDate(new Date(today.getFullYear(), today.getMonth(), i));
+            const dateStr = formatDate(new Date(currentMonth.getFullYear(), currentMonth.getMonth(), i));
             let completedCount = 0;
             habits.forEach(habit => {
                 if (habit.completedDates.includes(dateStr)) {
@@ -130,14 +170,15 @@ document.addEventListener('DOMContentLoaded', function() {
             if (completedCount > 0) {
                 day.classList.add('completed');
                 day.title = `${completedCount} habit${completedCount > 1 ? 's' : ''} completed`;
-            } else if (new Date(today.getFullYear(), today.getMonth(), i) < today &&
-                new Date(today.getFullYear(), today.getMonth(), i).getDay() !== 0 &&
-                new Date(today.getFullYear(), today.getMonth(), i).getDay() !== 6) {
+            } else if (new Date(currentMonth.getFullYear(), currentMonth.getMonth(), i) < today &&
+                new Date(currentMonth.getFullYear(), currentMonth.getMonth(), i).getDay() !== 0 &&
+                new Date(currentMonth.getFullYear(), currentMonth.getMonth(), i).getDay() !== 6) {
                 day.classList.add('missed');
             }
             calendar.appendChild(day);
         }
     }
+
     window.toggleHabit = function(habitId) {
         const habit = habits.find(h => h.id === habitId);
         if (!habit) return;
@@ -153,6 +194,7 @@ document.addEventListener('DOMContentLoaded', function() {
         renderTodayHabits();
         renderCalendar();
     }
+
     window.deleteHabit = function(habitId) {
         if (confirm('Are you sure you want to delete this habit?')) {
             habits = habits.filter(h => h.id !== habitId);
@@ -160,9 +202,11 @@ document.addEventListener('DOMContentLoaded', function() {
             renderHabits();
         }
     }
+
     function formatDate(date) {
         return date.toISOString().split('T')[0];
     }
+
     function updateCharts() {
         updateCompletionChart();
         updateStreakChart();
@@ -170,6 +214,7 @@ document.addEventListener('DOMContentLoaded', function() {
         updateTrendChart();
         updateStats();
     }
+
     function updateCompletionChart() {
         const ctx = document.getElementById('completion-chart').getContext('2d');
         const last7Days = [];
@@ -233,6 +278,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+
     function updateStreakChart() {
         const ctx = document.getElementById('streak-chart').getContext('2d');
         const habitNames = habits.map(h => h.name);
@@ -315,6 +361,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+
     function updateCategoryChart() {
         const ctx = document.getElementById('category-chart').getContext('2d');
         const categories = ['health', 'productivity', 'learning', 'personal', 'other'];
@@ -363,6 +410,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+
     function updateTrendChart() {
         const ctx = document.getElementById('trend-chart').getContext('2d');
         const last30Days = [];
@@ -428,6 +476,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+
     function updateStats() {
         let longestStreak = 0;
         habits.forEach(habit => {
@@ -457,6 +506,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('completion-rate').textContent = `${completionRate}%`;
         document.getElementById('total-habits').textContent = habits.length;
     }
+
     function calculateCompletionRate() {
         const totalHabits = habits.length;
         if (totalHabits === 0) return 0;

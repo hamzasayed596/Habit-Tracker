@@ -194,6 +194,7 @@ input, select {
     cursor: pointer;
     transition: all 0.2s ease;
     font-weight: 500;
+    color: var(--text-primary);
 }
 .calendar-day.empty {
     background: transparent;
@@ -204,8 +205,8 @@ input, select {
     color: white;
 }
 .calendar-day.missed {
-    background-color: var(--danger);
-    color: white;
+    background-color: var(--muted-bg);
+    color: var(--text-primary);
 }
 .calendar-day:hover {
     transform: scale(1);
